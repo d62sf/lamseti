@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>لمستي لك 💗</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff0f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      color: #d63384;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      margin: 10px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff85c1;
+    }
+    .info {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .message {
+      margin-top: 15px;
+      font-size: 24px;
+      color: #c2185b;
+      font-weight: bold;
+    }
+    .heart {
+      position: absolute;
+      font-size: 30px;
+      animation: floatUp 2s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-150px) scale(1.5);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>👩‍❤️‍👨 لمستي لك اليوم</h1>
+  <div>
+    <button class="touchBtn" data-msg="بحبك 💕">بحبك</button>
+    <button class="touchBtn" data-msg="اشتقتلك 😘">اشتقتلك</button>
+  </div>
+  <div class="info">
+    <p>عدد اللمسات اليوم: <span id="touchCount">0</span></p>
+    <p>آخر لمسة: <span id="lastTouch">--:--</span></p>
+    <p class="message" id="msgShow">💌</p>
+  </div>
+
+  <script>
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const savedDate = localStorage.getItem("touchDate");
+    if (savedDate !== todayKey) {
+      localStorage.setItem("touches", "0");
+      localStorage.setItem("touchDate", todayKey);
+    }
+
+    let count = parseInt(localStorage.getItem("touches")) || 0;
+    document.getElementById("touchCount").textContent = count;
+
+    const updateTime = () => {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById("lastTouch").textContent = timeStr;
+      localStorage.setItem("lastTouch", timeStr);
+    };
+
+    const loadTime = localStorage.getItem("lastTouch");
+    if (loadTime) document.getElementById("lastTouch").textContent = loadTime;
+
+    const buttons = document.querySelectorAll(".touchBtn");
+    buttons.forEach(button => {
+      button.addEventListener("click", (e) => {
+        count++;
+        document.getElementById("touchCount").textContent = count;
+        localStorage.setItem("touches", count);
+        localStorage.setItem("touchDate", todayKey);
+
+        const msg = button.getAttribute("data-msg");
+        document.getElementById("msgShow").textContent = msg;
+
+        try {
+          const sparkle = new Audio("https://cdn.freesound.org/previews/337/337049_3232490-lq.mp3");
+          sparkle.currentTime = 0;
+          sparkle.play();
+        } catch (e) {
+          console.log("الصوت ما اشتغل:", e);
+        }
+
+        updateTime();
+        createHeart(e.clientX, e.clientY);
+      });
+    });
+
+    function createHeart(x, y) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = ["💖", "❤️", "💕", "💘"][Math.floor(Math.random() * 4)];
+      heart.style.left = `${Math.random() * 80 + 10}%`;
+      heart.style.top = "60%";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+  </script>
+</body>
+</html>
